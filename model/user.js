@@ -1,11 +1,24 @@
-const mongoose = require('mongoose')
+// check user email availability
+router.get('/checkEmail/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
 
-const userSchema = new mongoose.Schema({
-    _id:mongoose.Schema.Types.ObjectId,
-    firstName:{type:String, required:true},
-    lastName:{type:String,required:true},
-    email:{type:String,required:true},
-    password:{type:String,required:true}
-})
+    const result = await User.find({ email: email });
 
-module.exports = mongoose.model('User',userSchema);
+    if (result.length > 0) {
+      return res.status(200).json({
+        isAvailable: false
+      });
+    }
+
+    return res.status(200).json({
+      isAvailable: true
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Server Error"
+    });
+  }
+});
